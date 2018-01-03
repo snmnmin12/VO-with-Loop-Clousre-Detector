@@ -19,4 +19,4 @@ When running bundle adjustment after loop detection, instead of running global, 
 
 ## Install and usage notes
 install g2o and opencv, for the other dependences, the files are included in the third party folder, run ./build.sh to run and execute the files.
-![Loop Closure](path.png)
+![Loop Closure](path.gif)
