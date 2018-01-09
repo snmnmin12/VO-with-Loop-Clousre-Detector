@@ -1,0 +1,34 @@
+#stereo path
+stereo_dir=/Users/HJK-BD/Downloads/kitti/00
+
+#pose path
+pose_file=/Users/HJK-BD/Downloads/kitti/poses/00.txt
+
+#camera
+camera.fx=718.856
+camera.fy=718.856
+camera.cx=607.1928
+camera.cy=185.2157
+camera.scale=1
+camera.d0=0
+camera.d1=0
+camera.d2=0
+camera.d3=0
+camera.d4=0
+
+#baseline
+baseline=0.54
+
+#check keyframe
+keyframe_min_translation=0.85
+keyframe_min_rotation=0.05
+
+
+#maxframe
+maxframe=4500
+
+#m vocfile
+m_vocfile=./resources/ORBvoc.txt
+
+IMAGE_W=1241
+IMAGE_H=376
