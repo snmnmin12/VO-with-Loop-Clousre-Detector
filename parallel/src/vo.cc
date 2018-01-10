@@ -1,4 +1,6 @@
 #include "vo.h"
+#include <condition_variable>
+#include <mutex>
 
 using namespace cv;
 using namespace DBoW2;
@@ -39,23 +41,42 @@ void VO2::extract_keypoints(Frame::Ptr& frame)  {
 }
 
 void VO2::playSequence(){
-    int startIndex = 0;
-    std::cout << max_frame << std::endl;
-    cout << "max_frame: " << max_frame << endl;
-    //loop through all the images here
-	for(int i = startIndex; i < max_frame; i++) {
 
-		cout << i << endl;
-		Frame::Ptr frame = frameReader.read(i);
-		extract_keypoints(frame);
+	mutex frame_mutex;
+	condition_variable frame_updated;
+	bool shutdownflag=false;
 
-		tracker->track(frame);		
-		Frame::Ptr frame_ = tracker->getFrame();
-		optimizer->insertFrame(frame_);
-		viewer->show();
+	thread mainloop=([&](){
+	    int startIndex = 0;
+	    std::cout << max_frame << std::endl;
+	    cout << "max_frame: " << max_frame << endl;
+	    //loop through all the images here
+		for(int i = startIndex; i < max_frame; i++) {
+
+			cout << i << endl;
+			Frame::Ptr frame = frameReader.read(i);
+			extract_keypoints(frame);
+
+			tracker->track(frame);		
+			Frame::Ptr frame_ = tracker->getFrame();
+			optimizer->insertFrame(frame_);
+			frame_updated.notify_one();
+			//viewer->show();
+		}
+			optimizer->shutdown();
+			tracker->shutdown();
+			frame_updated.notify_all();
+		}
+	);	
+
+	while(!shutdownflag) {
+		unique_lock<mutex> lck(frame_mutex);
+    	frame_updated.wait(lck);
+    	cout <<"frame updated!"<<endl;
+    	viewer->show();
 	}
-	optimizer->shutdown();
-	tracker->shutdown();
+
+	mainloop,join();
 	cout <<"System ended!"<< endl;
 	viewer->pause();
 }
