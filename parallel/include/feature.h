@@ -2,6 +2,7 @@
 
 #include "common_headers.h"
 #include "frame.h"
+#include <thread>
 
 class FDetector {
 private:
@@ -28,16 +29,26 @@ public:
 	    vector<cv::KeyPoint> keypoints1, keypoints2;
 		cv::Mat descriptors1, descriptors2;
 
-	 	orb->detectAndCompute(frame->left, cv::Mat(), keypoints1, descriptors1);
-		orb->detectAndCompute(frame->right,cv::Mat(), keypoints2, descriptors2);
+		thread left([&](){
+			orb->detectAndCompute(frame->left, cv::Mat(), keypoints1, descriptors1);
+			frame->KeyPoints = keypoints1;
+			restructure (descriptors1, frame->descriptors);
+			descriptors1.convertTo(descriptors1, CV_32F);
+		});
 
+		thread right([&](){
+			orb->detectAndCompute(frame->right,cv::Mat(), keypoints2, descriptors2);
+			descriptors2.convertTo(descriptors2, CV_32F);
+		});
+		left.join();
+		right.join();
 		//change to Bow feature
-		frame->KeyPoints = keypoints1;
-		restructure (descriptors1, frame->descriptors);
+		// frame->KeyPoints = keypoints1;
+		// restructure (descriptors1, frame->descriptors);
 
 		//to generate the mathcing points and 3D points
-		descriptors1.convertTo(descriptors1, CV_32F);
-	    descriptors2.convertTo(descriptors2, CV_32F);
+		//descriptors1.convertTo(descriptors1, CV_32F);
+	    //descriptors2.convertTo(descriptors2, CV_32F);
 		
 		//matching feature points
 	    vector<vector<cv::DMatch>> matches;
@@ -60,6 +71,5 @@ public:
   //                       bestMatches, out );
   //       cv::imshow( "inlier matches", out );
   //       cv::waitKey(0);
-
 	}
 };

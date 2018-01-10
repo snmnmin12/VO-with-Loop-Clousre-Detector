@@ -7,6 +7,7 @@
 #include <memory>
 #include <algorithm>
 #include <map>
+#include <thread>
 
 #define IMAGE_W 1241
 #define IMAGE_H 376
@@ -124,11 +125,18 @@ void VO2::extract_keypoints(int index, const Mat& img1, const Mat& img2, vector<
 	vector<KeyPoint> keypoints1, keypoints2;
 	Mat descriptors1, descriptors2;
 
-	orb->detectAndCompute(img1,cv::Mat(), keypoints1, descriptors1);
-	orb->detectAndCompute(img2,cv::Mat(), keypoints2, descriptors2);
 	//loop detector here
 	vector<FORB::TDescriptor> descriptors;
-	restructure (descriptors1, descriptors);
+
+	std::thread left([&](){
+		orb->detectAndCompute(img1,cv::Mat(), keypoints1, descriptors1);
+		restructure (descriptors1, descriptors);
+	});
+	std::thread right([&](){
+		orb->detectAndCompute(img2,cv::Mat(), keypoints2, descriptors2);
+	});
+	left.join();
+	right.join();
 
 	DetectionResult result;
 	loopDetector->detectLoop(keypoints1, descriptors, result);
