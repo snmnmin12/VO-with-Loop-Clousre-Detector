@@ -1,21 +1,29 @@
+
+#include "parameter_reader.h"
 #include "vo.h"
-#include <fstream>
-using namespace std;
 
 
-string left_path =  "/Users/HJK-BD/Downloads/kitti/00/image_0/%06d.png";
-string right_path = "/Users/HJK-BD/Downloads/kitti/00/image_1/%06d.png"; 
-string pose_path =  "/Users/HJK-BD/Downloads/kitti/poses/00.txt";
-string  voc_file  = "./resources/ORBvoc.txt";
+ParameterReader param;
+
+
+// string left_path =  "/Users/HJK-BD/Downloads/kitti/00/image_0/%06d.png";
+// string right_path = "/Users/HJK-BD/Downloads/kitti/00/image_1/%06d.png"; 
+// string pose_path =  "/Users/HJK-BD/Downloads/kitti/poses/00.txt";
+// string  voc_file  = "./resources/ORBvoc.txt";
+
 //load the poses from ground truth pose data files
 void load_Pose(const std::string& path, vector<vector<float>>& poses);
 
 int main(int argc, char** argv) {
    
-    int max_frame = 4541;
-    if (argc == 2) max_frame = atoi(argv[1]);
+    string folder = param.getData<string>("stereo_dir");
+    string left_path = folder + "/image_0/%06d.png";
+    string right_path = folder + "/image_1/%06d.png";
+    string pose_path = param.getData<string>("pose_file") + "/poses/00.txt";
+    string voc_file  = param.getData<string>("m_vocfile");
 
-	//you have to configure your own path
+    int max_frame    = param.getData<int>("maxframe");
+    //you have to configure your own path
 
     cout <<"Program starts!"<<endl;
 
@@ -41,14 +49,15 @@ int main(int argc, char** argv) {
 
 void load_Pose(const std::string& path, vector<vector<float>>& poses) {
 
+  cout << "Loading path file: " << path << endl;
   ifstream myfile(path);
   string line;
   if (myfile.is_open())
   {
     while (getline(myfile,line) )
     {    
-  std::stringstream ss;
-  ss << line;
+        std::stringstream ss;
+        ss << line;
         std::vector<float> v;
         v.resize(12);
         for (int i = 0; i < 12; i++) {
@@ -61,7 +70,7 @@ void load_Pose(const std::string& path, vector<vector<float>>& poses) {
     }
     myfile.close();
   } else {
-    cout << "Unable to open file"; 
+    cout << "Unable to open file\n"; 
   } 
 
 }

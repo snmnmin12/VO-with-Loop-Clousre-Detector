@@ -18,5 +18,5 @@ When running bundle adjustment after loop detection, instead of running global, 
 * DBow2 and DLoop Detector for Loop closure detection 
 
 ## Install and usage notes
-install g2o and opencv, for the other dependences, the files are included in the third party folder, run ./build.sh to run and execute the files.
+install g2o and opencv, for the other dependences, the files are included in the third party folder, run ./build.sh to run and execute the files, the test images are in the image folder, so you can use them to start!
 ![Loop Closure](path.gif)
