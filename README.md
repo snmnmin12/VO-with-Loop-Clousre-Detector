@@ -17,6 +17,14 @@ When running bundle adjustment after loop detection, instead of running global, 
 * g2o optimizaiton package
 * DBow2 and DLoop Detector for Loop closure detection 
 
+## Directories
+Parallel folder is to create separate threads for different task, such as optimization, visualization.
+
+network folder is to use client server model, client process for computation, then send data to server process for visualization. So we can separate the client and server process on different machines.
+
 ## Install and usage notes
 install g2o and opencv, for the other dependences, the files are included in the third party folder, run ./build.sh to run and execute the files, the test images are in the image folder, so you can use them to start!
 ![Loop Closure](path.gif)
+
+Final trajectory after completing all the images.
+![](path.png)
